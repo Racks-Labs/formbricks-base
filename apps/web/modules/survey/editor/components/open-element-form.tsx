@@ -259,7 +259,7 @@ const getPlaceholderByInputType = (inputType: TSurveyOpenTextElementInputType) =
     case "number":
       return "42";
     case "phone":
-      return "+1 123 456 789";
+      return "123 456 789";
     default:
       return "Type your answer here...";
   }

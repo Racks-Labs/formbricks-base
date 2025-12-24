@@ -1,8 +1,8 @@
 import * as React from "react";
-import { ElementError } from "@/components/general/element-error";
 import { ElementHeader } from "@/components/general/element-header";
 import { Input } from "@/components/general/input";
 import { Label } from "@/components/general/label";
+import { PhoneInput } from "@/components/general/phone-input";
 
 /**
  * Form field configuration
@@ -97,7 +97,6 @@ function FormField({
 
       {/* Form Fields */}
       <div className="relative space-y-3">
-        <ElementError errorMessage={errorMessage} dir={dir} />
         {visibleFields.map((field) => {
           const fieldRequired = isFieldRequired(field);
           const fieldValue = currentValues[field.id] ?? "";
@@ -111,23 +110,40 @@ function FormField({
             inputType = "tel";
           }
 
+          const isPhoneField = field.id === "phone" || inputType === "tel";
+
           return (
             <div key={field.id} className="space-y-2">
               <Label htmlFor={fieldInputId} variant="default">
                 {fieldRequired ? `${field.label}*` : field.label}
               </Label>
-              <Input
-                id={fieldInputId}
-                type={inputType}
-                value={fieldValue}
-                onChange={(e) => {
-                  handleFieldChange(field.id, e.target.value);
-                }}
-                required={fieldRequired}
-                disabled={disabled}
-                dir={dir}
-                aria-invalid={Boolean(errorMessage) || undefined}
-              />
+              {isPhoneField ? (
+                <PhoneInput
+                  id={fieldInputId}
+                  value={fieldValue}
+                  onChange={(newValue) => {
+                    handleFieldChange(field.id, newValue);
+                  }}
+                  placeholder={field.placeholder}
+                  required={fieldRequired}
+                  disabled={disabled}
+                  dir={dir}
+                  errorMessage={errorMessage}
+                />
+              ) : (
+                <Input
+                  id={fieldInputId}
+                  type={inputType}
+                  value={fieldValue}
+                  onChange={(e) => {
+                    handleFieldChange(field.id, e.target.value);
+                  }}
+                  required={fieldRequired}
+                  disabled={disabled}
+                  dir={dir}
+                  errorMessage={errorMessage}
+                />
+              )}
             </div>
           );
         })}
