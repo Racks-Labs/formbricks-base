@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { ElementError } from "@/components/general/element-error";
 import { ElementHeader } from "@/components/general/element-header";
 import { Input } from "@/components/general/input";
+import { PhoneInput } from "@/components/general/phone-input";
 import { Textarea } from "@/components/general/textarea";
 import { cn } from "@/lib/utils";
 
@@ -51,6 +51,13 @@ function OpenText({
     onChange(newValue);
   };
 
+  const handlePhoneChange = (newValue: string): void => {
+    setCurrentLength(newValue.length);
+    onChange(newValue);
+  };
+
+  const isPhoneInput = inputType === "phone";
+
   const renderCharLimit = (): React.JSX.Element | null => {
     if (charLimit?.max === undefined) return null;
     const isOverLimit = currentLength >= charLimit.max;
@@ -68,7 +75,6 @@ function OpenText({
 
       {/* Input or Textarea */}
       <div className="relative space-y-2">
-        <ElementError errorMessage={errorMessage} dir={dir} />
         <div className="space-y-1">
           {longAnswer ? (
             <Textarea
@@ -80,9 +86,20 @@ function OpenText({
               dir={dir}
               rows={rows}
               disabled={disabled}
-              aria-invalid={Boolean(errorMessage) || undefined}
+              errorMessage={errorMessage}
               minLength={charLimit?.min}
               maxLength={charLimit?.max}
+            />
+          ) : isPhoneInput ? (
+            <PhoneInput
+              id={inputId}
+              placeholder={placeholder}
+              value={value}
+              onChange={handlePhoneChange}
+              required={required}
+              dir={dir}
+              disabled={disabled}
+              errorMessage={errorMessage}
             />
           ) : (
             <Input
@@ -94,7 +111,7 @@ function OpenText({
               required={required}
               dir={dir}
               disabled={disabled}
-              aria-invalid={Boolean(errorMessage) || undefined}
+              errorMessage={errorMessage}
               minLength={charLimit?.min}
               maxLength={charLimit?.max}
             />
