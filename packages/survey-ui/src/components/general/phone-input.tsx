@@ -39,6 +39,7 @@ function PhoneInput({
 }: Readonly<PhoneInputProps>): React.JSX.Element {
   const [isOpen, setIsOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
+  const [mounted, setMounted] = React.useState(false);
   const [dropdownPosition, setDropdownPosition] = React.useState<{
     top: number;
     left: number;
@@ -47,6 +48,10 @@ function PhoneInput({
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const parseValue = React.useCallback((): { country: Country; phoneNumber: string } => {
     if (!value) {
@@ -122,6 +127,8 @@ function PhoneInput({
   }, [isOpen]);
 
   React.useEffect(() => {
+    if (!mounted) return;
+
     const handleClickOutside = (event: MouseEvent): void => {
       const target = event.target as Node;
       if (
@@ -145,9 +152,11 @@ function PhoneInput({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, mounted]);
 
   const hasError = Boolean(errorMessage);
+
+  const portalContainer = mounted && typeof document !== "undefined" ? document.body : null;
 
   return (
     <div className="space-y-1">
@@ -199,7 +208,7 @@ function PhoneInput({
           </button>
         </div>
 
-        {isOpen && dropdownPosition && typeof document !== "undefined"
+        {isOpen && dropdownPosition && portalContainer
           ? createPortal(
               <div
                 ref={dropdownRef}
@@ -262,7 +271,7 @@ function PhoneInput({
                   )}
                 </div>
               </div>,
-              document.body
+              portalContainer
             )
           : null}
 
